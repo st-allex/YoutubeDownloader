@@ -31,9 +31,10 @@ def initWnd():
     rez_dict = dict()
     newwnd = Tk()
     rez_dict['mywnd'] = newwnd
-    for col_ind in range(2):
+
+    for col_ind in range(4):
         newwnd.columnconfigure(index=col_ind, weight=1)
-    for row_ind in range(2):
+    for row_ind in range(4):
         newwnd.rowconfigure(index=row_ind, weight=1)
 
     newwnd.config(bg='#336699', width=600, height=600)
@@ -46,18 +47,17 @@ def initWnd():
                      foreground='#003366')
     rez_dict['yt_url'] = yt_url
     yt_url.insert(0, 'https://www.youtube.com/watch?v=ibf2u-rVb6o')
-    yt_url.place(x=10, y=10)
+    yt_url.grid(row=0, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
 
     thumbnail_default = tkPhotoImage(file='thumbnail.png')
     prev_img = tkLabel(newwnd)
     rez_dict['prev_img'] = prev_img
     prev_img.config(image=thumbnail_default, width=320, height=190)
     prev_img.image = thumbnail_default
-    prev_img.place(x=10, y=40)
+    prev_img.grid(row=1, column=0, columnspan=2, rowspan=2, sticky='swen', padx=5, pady=5)
 
     btnCheck = tkButton(newwnd,
                     text='Проверить скачиваемое видео.',
-                    width=32,
                     height=1,
                     bg='#003366',
                     activebackground='#6699CC',
@@ -66,22 +66,20 @@ def initWnd():
                     activeforeground='#0000ff',
                     command=check_cmd)
     rez_dict['btnCheck'] = btnCheck
-    btnCheck.place(x=340, y=40)
+    btnCheck.grid(row=1, column=2, columnspan=2, sticky='swen', padx=5, pady=5)
 
     info_img = tkText(newwnd,
-                    width=31,
-                    height=6,
+                    height=5,
                     bg='#99ccff',
                     font=('Arial', 11, 'normal'),
                     wrap='word',
                     state='disabled',
                     spacing3=7)
     rez_dict['info_img'] = info_img
-    info_img.place(x=340, y=75)
+    info_img.grid(row=2, column=2, columnspan=2, sticky='swen', padx=5, pady=5)
 
     btnDownload = tkButton(newwnd,
                     text='Скачать видео',
-                    width=79,
                     height=1,
                     bg='#003366',
                     activebackground='#6699CC',
@@ -90,7 +88,7 @@ def initWnd():
                     activeforeground='#0000ff',
                     command=download_cmd)
     rez_dict['btnDownload'] = btnDownload
-    btnDownload.place(x=10, y=240)
+    btnDownload.grid(row=3, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
 
     #cr_lbl = tkLabel(newwnd, text='Copyright by st-allex')
     #cr_lbl.pack(anchor="se")
