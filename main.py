@@ -46,14 +46,12 @@ def initWnd():
     for row_ind in range(5):
         newwnd.rowconfigure(index=row_ind, weight=1)
 
-    newwnd.config(bg='#336699', width=600, height=600)
+    newwnd.config(bg='#336699') #, width=600, height=600)
     newwnd.title("Youtube downloader")
     #newwnd.iconbitmap("ytDownload.ico")
     newwnd.resizable(width=False, height=False)
 
-    yt_url = tkEntry(newwnd,
-                     width=72,
-                     foreground='#003366')
+    yt_url = tkEntry(newwnd, foreground='#003366')
     rez_dict['yt_url'] = yt_url
     yt_url.insert(0, 'https://www.youtube.com/watch?v=ibf2u-rVb6o')
     yt_url.grid(row=0, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
@@ -122,7 +120,9 @@ def set_thumbnail(thumbnail_url, thumbnail_lbl):
     global bCheck
     response = get_url(thumbnail_url)
     if response.status_code!=200:
-        thumbnail_lbl['text'] = 'image not found'
+        dict_mywnd['info_img'].config(state='normal')
+        dict_mywnd['info_img'].insert("end", "Thumbnail not found\n")
+        dict_mywnd['info_img'].config(state='disabled')
     else:
         img_from_url = iImageTk.PhotoImage(iImage.open(BytesIO(response.content)).resize((320, 190), iImage.LANCZOS))
         thumbnail_lbl.config(image=img_from_url, width=320, height=190)
@@ -136,10 +136,10 @@ def set_info_img(oYT, info_img_txt):
     m = s // 60
     s = s - m*60
     info_img_txt.config(state='normal')
-    info_img_txt.insert("1.0", 'ЗАГОЛОВОК: ' + oYT.title + '\n')
-    info_img_txt.insert("2.0", 'АВТОР: ' + oYT.author + '\n')
-    info_img_txt.insert("3.0", 'ДАТА ПУБЛИКАЦИИ: ' + str(oYT.publish_date) + '\n')
-    info_img_txt.insert("4.0", 'ПРОДОЛЖИТЕЛЬНОСТЬ ВИДЕО: ' + str(h) + ' ч ' + str(m) + ' м ' + str(s) + ' с')
+    info_img_txt.insert("end", 'ЗАГОЛОВОК: ' + oYT.title + '\n')
+    info_img_txt.insert("end", 'АВТОР: ' + oYT.author + '\n')
+    info_img_txt.insert("end", 'ДАТА ПУБЛИКАЦИИ: ' + str(oYT.publish_date) + '\n')
+    info_img_txt.insert("end", 'ПРОДОЛЖИТЕЛЬНОСТЬ ВИДЕО: ' + str(h) + ' ч ' + str(m) + ' м ' + str(s) + ' с')
     info_img_txt.config(state='disabled')
 
 
