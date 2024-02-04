@@ -47,7 +47,6 @@ def initWnd():
     rez_dict['prev_img'] = prev_img
     prev_img.config(image=thumbnail_default, width=320, height=190)
     prev_img.image = thumbnail_default
-
     prev_img.place(x=10, y=40)
 
     btnCheck = tkButton(newwnd,
@@ -90,11 +89,20 @@ def initWnd():
     return rez_dict
 
 
+def clear_prev_info():
+    thumbnail_default = tkPhotoImage(file='thumbnail.png')
+    dict_mywnd['prev_img'].image = thumbnail_default
+    dict_mywnd['prev_img'].config(image=thumbnail_default, width=320, height=190)
+    dict_mywnd['info_img'].config(state='normal')
+    dict_mywnd['info_img'].delete("1.0", "100.0")
+    dict_mywnd['info_img'].config(state='disabled')
+
+
 def set_thumbnail(thumbnail_url, thumbnail_lbl):
     global bCheck
     response = get_url(thumbnail_url)
     if response.status_code!=200:
-        thumbnail_lbl['text'] = 'immage not found'
+        thumbnail_lbl['text'] = 'image not found'
     else:
         img_from_url = iImageTk.PhotoImage(iImage.open(BytesIO(response.content)).resize((320, 190), iImage.LANCZOS))
         thumbnail_lbl.config(image=img_from_url, width=320, height=190)
@@ -122,7 +130,8 @@ def get_yt(yt_url):
 def download_cmd():
     if bCheck:
         file_name = ''
-        download_file(yt, file_name)
+        #download_file(yt, file_name)
+        clear_prev_info()
     else:
         print('Сначала проверьте скачиваемое видео.')
 
@@ -133,6 +142,7 @@ def download_file(oYT, file_name):
 
 def check_cmd():
     global yt
+    clear_prev_info()
     yt = get_yt(dict_mywnd['yt_url'].get())
     set_thumbnail(yt.thumbnail_url, dict_mywnd['prev_img'])
     set_info_img(yt, dict_mywnd['info_img'])
