@@ -31,6 +31,11 @@ def initWnd():
     rez_dict = dict()
     newwnd = Tk()
     rez_dict['mywnd'] = newwnd
+    for col_ind in range(2):
+        newwnd.columnconfigure(index=col_ind, weight=1)
+    for row_ind in range(2):
+        newwnd.rowconfigure(index=row_ind, weight=1)
+
     newwnd.config(bg='#336699', width=600, height=600)
     newwnd.title("Youtube downloader")
     #newwnd.iconbitmap("ytDownload.ico")
