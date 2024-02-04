@@ -33,6 +33,7 @@ def initWnd():
     rez_dict['mywnd'] = newwnd
     newwnd.config(bg='#336699', width=600, height=600)
     newwnd.title("Youtube downloader")
+    #newwnd.iconbitmap("ytDownload.ico")
     newwnd.resizable(width=False, height=False)
 
     yt_url = tkEntry(newwnd,
@@ -86,6 +87,9 @@ def initWnd():
     rez_dict['btnDownload'] = btnDownload
     btnDownload.place(x=10, y=240)
 
+    #cr_lbl = tkLabel(newwnd, text='Copyright by st-allex')
+    #cr_lbl.pack(anchor="se")
+
     return rez_dict
 
 
@@ -94,7 +98,7 @@ def clear_prev_info():
     dict_mywnd['prev_img'].image = thumbnail_default
     dict_mywnd['prev_img'].config(image=thumbnail_default, width=320, height=190)
     dict_mywnd['info_img'].config(state='normal')
-    dict_mywnd['info_img'].delete("1.0", "100.0")
+    dict_mywnd['info_img'].delete("1.0", "end")
     dict_mywnd['info_img'].config(state='disabled')
 
 
