@@ -137,8 +137,7 @@ def get_yt(yt_url):
 def download_cmd():
     if bCheck:
         file_name = ''
-        #download_file(yt, file_name)
-        clear_prev_info()
+        download_file(yt, file_name)
     else:
         print('Сначала проверьте скачиваемое видео.')
 
@@ -156,7 +155,7 @@ def check_cmd():
 
 
 def main_cons():
-    download_file(get_yt(input('Введите ссылку youtube: ')), input('Введите имя файла: '))
+    download_file(get_yt(input('Введите ссылку youtube: ')), input('Укажите путь файла: '))
     #print("\n" + Path2SavedVideo)
 
 
