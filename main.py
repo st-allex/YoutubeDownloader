@@ -1,5 +1,6 @@
 from pytube import YouTube
-from tkinter import (Tk, Entry as tkEntry,
+from tkinter import (Tk, ttk,
+                     Entry as tkEntry,
                      Label as tkLabel,
                      Text as tkText,
                      Button as tkButton,
@@ -8,9 +9,12 @@ from requests import get as get_url
 from io import BytesIO
 from PIL import Image as iImage, ImageTk as iImageTk
 
+
 yt = None
 dict_mywnd = None
 bCheck = False
+# 0 - console, 1 - tkinter
+gui_mode = 1
 
 
 def int2str(cur_int: int) -> str:
@@ -23,8 +27,13 @@ def on_progress(stream, total_size, byte_remaining):
     total_size = stream.filesize
     bytes_downloaded = total_size - byte_remaining
     percent = (bytes_downloaded / total_size) * 100
-    print("\r" + chr(9646)*int(percent) + chr(9647)*(100-int(percent)) + f" {int(percent)}% " +
+    if gui_mode==0:
+        print("\r" + chr(9646)*int(percent) + chr(9647)*(100-int(percent)) + f" {int(percent)}% " +
                                         f"[{int2str(bytes_downloaded)} / {int2str(total_size)}]", end="")
+    elif gui_mode==1:
+        dict_mywnd['pbDownload'].config(value=percent)
+    else:
+        pass
 
 
 def initWnd():
@@ -34,7 +43,7 @@ def initWnd():
 
     for col_ind in range(4):
         newwnd.columnconfigure(index=col_ind, weight=1)
-    for row_ind in range(4):
+    for row_ind in range(5):
         newwnd.rowconfigure(index=row_ind, weight=1)
 
     newwnd.config(bg='#336699', width=600, height=600)
@@ -90,6 +99,10 @@ def initWnd():
     rez_dict['btnDownload'] = btnDownload
     btnDownload.grid(row=3, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
 
+    pbDownload = ttk.Progressbar(newwnd)
+    rez_dict['pbDownload'] = pbDownload
+    pbDownload.grid(row=4, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
+
     #cr_lbl = tkLabel(newwnd, text='Copyright by st-allex')
     #cr_lbl.pack(anchor="se")
 
@@ -123,10 +136,10 @@ def set_info_img(oYT, info_img_txt):
     m = s // 60
     s = s - m*60
     info_img_txt.config(state='normal')
-    info_img_txt.insert("1.0", 'Title: ' + oYT.title + '\n')
-    info_img_txt.insert("2.0", 'Autor: ' + oYT.author + '\n')
-    info_img_txt.insert("3.0", 'Publish date: ' + str(oYT.publish_date) + '\n')
-    info_img_txt.insert("4.0", 'Video length: ' + str(h) + ' h ' + str(m) + ' m ' + str(s) + ' s')
+    info_img_txt.insert("1.0", 'ЗАГОЛОВОК: ' + oYT.title + '\n')
+    info_img_txt.insert("2.0", 'АВТОР: ' + oYT.author + '\n')
+    info_img_txt.insert("3.0", 'ДАТА ПУБЛИКАЦИИ: ' + str(oYT.publish_date) + '\n')
+    info_img_txt.insert("4.0", 'ПРОДОЛЖИТЕЛЬНОСТЬ ВИДЕО: ' + str(h) + ' ч ' + str(m) + ' м ' + str(s) + ' с')
     info_img_txt.config(state='disabled')
 
 
