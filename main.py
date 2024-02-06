@@ -1,14 +1,15 @@
 from pytube import YouTube
 from tkinter import (Tk, ttk,
-                     Entry as tkEntry,
-                     Label as tkLabel,
-                     Text as tkText,
-                     Button as tkButton,
-                     PhotoImage as tkPhotoImage)
+                    Entry as tkEntry,
+                    Label as tkLabel,
+                    Text as tkText,
+                    Button as tkButton,
+                    Frame as tkFrame,
+                    StringVar as tkStringVar,
+                    PhotoImage as tkPhotoImage)
 from requests import get as get_url
 from io import BytesIO
 from PIL import Image as iImage, ImageTk as iImageTk
-
 
 yt = None
 dict_mywnd = None
@@ -27,14 +28,13 @@ def on_progress(stream, total_size, byte_remaining):
     total_size = stream.filesize
     bytes_downloaded = total_size - byte_remaining
     percent = (bytes_downloaded / total_size) * 100
+    prog_inf = f"{int(percent)}% [{int2str(bytes_downloaded)} / {int2str(total_size)}]"
     if gui_mode==0:
-        print("\r" + chr(9646)*int(percent) + chr(9647)*(100-int(percent)) + f" {int(percent)}% " +
-                                        f"[{int2str(bytes_downloaded)} / {int2str(total_size)}]", end="")
+        print("\r" + chr(9646)*int(percent) + chr(9647)*(100-int(percent)) + ' | ' + prog_inf, end="")
     elif gui_mode==1:
         dict_mywnd['pbDownload'].config(value=percent)
+        dict_mywnd['dwn_inf'].config(text=prog_inf)
         dict_mywnd['pbDownload'].update()
-        dict_mywnd['dwn_inf'].config(text=f" {int(percent)}% " +
-                                        f"[{int2str(bytes_downloaded)} / {int2str(total_size)}]")
         dict_mywnd['dwn_inf'].update()
     else:
         pass
@@ -45,9 +45,9 @@ def initWnd():
     newwnd = Tk()
     rez_dict['mywnd'] = newwnd
 
-    for col_ind in range(4):
+    for col_ind in range(2):
         newwnd.columnconfigure(index=col_ind, weight=1)
-    for row_ind in range(6):
+    for row_ind in range(7):
         newwnd.rowconfigure(index=row_ind, weight=1)
 
     newwnd.config(bg='#336699') #, width=600, height=600)
@@ -58,36 +58,55 @@ def initWnd():
     yt_url = tkEntry(newwnd, foreground='#003366')
     rez_dict['yt_url'] = yt_url
     yt_url.insert(0, 'https://www.youtube.com/watch?v=ibf2u-rVb6o')
-    yt_url.grid(row=0, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
+    yt_url.grid(row=0, column=0, columnspan=2, sticky='swen', padx=5, pady=5)
 
     thumbnail_default = tkPhotoImage(file='thumbnail.png')
     prev_img = tkLabel(newwnd)
     rez_dict['prev_img'] = prev_img
     prev_img.config(image=thumbnail_default, width=320, height=190)
     prev_img.image = thumbnail_default
-    prev_img.grid(row=1, column=0, columnspan=2, rowspan=2, sticky='swen', padx=5, pady=5)
+    prev_img.grid(row=1, column=0, rowspan=2, sticky='swen', padx=5, pady=5)
 
     btnCheck = tkButton(newwnd,
-                    text='Проверить скачиваемое видео.',
-                    height=1,
-                    bg='#003366',
-                    activebackground='#6699CC',
-                    font=('Arial', 10, 'bold'),
-                    foreground='#ffff00',
-                    activeforeground='#0000ff',
-                    command=check_cmd)
+                        text='Проверить скачиваемое видео.',
+                        height=1,
+                        bg='#003366',
+                        activebackground='#6699CC',
+                        font=('Arial', 10, 'bold'),
+                        foreground='#ffff00',
+                        activeforeground='#0000ff',
+                        command=check_cmd)
     rez_dict['btnCheck'] = btnCheck
-    btnCheck.grid(row=1, column=2, columnspan=2, sticky='swen', padx=5, pady=5)
+    btnCheck.grid(row=1, column=1, sticky='swen', padx=5, pady=5)
 
     info_img = tkText(newwnd,
-                    height=5,
-                    bg='#99ccff',
-                    font=('Arial', 11, 'normal'),
-                    wrap='word',
-                    state='disabled',
-                    spacing3=7)
+                        height=5,
+                        bg='#99ccff',
+                        font=('Arial', 11, 'normal'),
+                        wrap='word',
+                        state='disabled',
+                        spacing3=7)
     rez_dict['info_img'] = info_img
-    info_img.grid(row=2, column=2, columnspan=2, sticky='swen', padx=5, pady=5)
+    info_img.grid(row=2, column=1, sticky='swen', padx=5, pady=5)
+
+    fr_param = tkFrame(newwnd, bg='#4477aa', height=300)
+    rez_dict['fr_param'] = fr_param
+    fr_param.grid(row=3, column=0, columnspan=2, sticky='swen', padx=5, pady=5)
+
+    dict_qualities = {'Низкое':0, 'Высокое':1}
+    list_qualities = list(dict_qualities.keys())
+    cur_quality = tkStringVar(master=fr_param)
+    fr_cb_quality = ttk.Combobox(fr_param,
+                                    foreground='blue',
+                                    width=8,
+                                    background='yellow',
+                                    state='readonly',
+                                    textvariable=cur_quality,
+                                    values=list_qualities)
+    rez_dict['fr_cb_quality'] = fr_cb_quality
+    fr_cb_quality.grid(row=0, column=0, sticky='swen', padx=5, pady=5)
+    cur_quality.set(list_qualities[0])
+    cur_quality.trace_add('write', handler_set_quality)
 
     dwn_inf = tkLabel(newwnd,
                       bg='#336699',
@@ -95,26 +114,28 @@ def initWnd():
                       font=('Arial', 11, 'normal'))
     rez_dict['dwn_inf'] = dwn_inf
     dwn_inf.config(text='')
-    dwn_inf.grid(row=3, column=0, columnspan=4, sticky='n')
+    dwn_inf.grid(row=4, column=0, columnspan=2, sticky='n')
 
     pbDownload = ttk.Progressbar(newwnd)
     rez_dict['pbDownload'] = pbDownload
-    pbDownload.grid(row=4, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
+    pbDownload.grid(row=5, column=0, columnspan=2, sticky='swen', padx=5, pady=5)
 
     btnDownload = tkButton(newwnd,
-                    text='Скачать видео',
-                    height=1,
-                    bg='#003366',
-                    activebackground='#6699CC',
-                    font=('Arial', 10, 'bold'),
-                    foreground='#ffff00',
-                    activeforeground='#0000ff',
-                    command=download_cmd)
+                            text='Скачать видео',
+                            height=1,
+                            bg='#003366',
+                            activebackground='#6699CC',
+                            font=('Arial', 10, 'bold'),
+                            foreground='#ffff00',
+                            activeforeground='#0000ff',
+                            command=download_cmd)
     rez_dict['btnDownload'] = btnDownload
-    btnDownload.grid(row=5, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
+    btnDownload.grid(row=6, column=0, columnspan=2, sticky='swen', padx=5, pady=5)
 
     return rez_dict
 
+def handler_set_quality(*args):
+    print('handler_set_quality')
 
 def clear_prev_info():
     thumbnail_default = tkPhotoImage(file='thumbnail.png')
