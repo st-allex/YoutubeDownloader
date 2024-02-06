@@ -95,18 +95,18 @@ def initWnd():
 
     dict_qualities = {'Низкое':0, 'Высокое':1}
     list_qualities = list(dict_qualities.keys())
-    cur_quality = tkStringVar(master=fr_param)
+    cur_quality = tkStringVar()
     fr_cb_quality = ttk.Combobox(fr_param,
                                     foreground='blue',
                                     width=8,
                                     background='yellow',
                                     state='readonly',
-                                    textvariable=cur_quality,
-                                    values=list_qualities)
+                                    values=list_qualities,
+                                    textvariable=cur_quality)
     rez_dict['fr_cb_quality'] = fr_cb_quality
     fr_cb_quality.grid(row=0, column=0, sticky='swen', padx=5, pady=5)
-    cur_quality.set(list_qualities[0])
-    cur_quality.trace('write', handler_set_quality)
+    cur_quality.set('kjh')
+    #cur_quality.trace('w', handler_set_quality)
 
     dwn_inf = tkLabel(newwnd,
                       bg='#336699',
