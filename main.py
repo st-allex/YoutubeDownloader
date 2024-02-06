@@ -106,7 +106,7 @@ def initWnd():
     rez_dict['fr_cb_quality'] = fr_cb_quality
     fr_cb_quality.grid(row=0, column=0, sticky='swen', padx=5, pady=5)
     cur_quality.set(list_qualities[0])
-    cur_quality.trace_add('write', handler_set_quality)
+    cur_quality.trace('write', handler_set_quality)
 
     dwn_inf = tkLabel(newwnd,
                       bg='#336699',
