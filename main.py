@@ -125,7 +125,7 @@ def clear_prev_info():
     dict_mywnd['info_img'].config(state='disabled')
 
 
-def no_img_inf():
+def msg_no_img_inf():
     dict_mywnd['info_img'].config(state='normal')
     dict_mywnd['info_img'].delete("1.0", "end")
     dict_mywnd['info_img'].insert("end", 'Сначала проверьте скачиваемое видео.' + '\n')
@@ -168,7 +168,7 @@ def download_cmd():
         file_name = ''
         download_file(yt, file_name)
     else:
-        no_img_inf()
+        msg_no_img_inf()
 
 
 def download_file(oYT, file_name):
