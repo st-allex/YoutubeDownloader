@@ -32,6 +32,10 @@ def on_progress(stream, total_size, byte_remaining):
                                         f"[{int2str(bytes_downloaded)} / {int2str(total_size)}]", end="")
     elif gui_mode==1:
         dict_mywnd['pbDownload'].config(value=percent)
+        dict_mywnd['pbDownload'].update()
+        dict_mywnd['dwn_inf'].config(text=f" {int(percent)}% " +
+                                        f"[{int2str(bytes_downloaded)} / {int2str(total_size)}]")
+        dict_mywnd['dwn_inf'].update()
     else:
         pass
 
@@ -43,7 +47,7 @@ def initWnd():
 
     for col_ind in range(4):
         newwnd.columnconfigure(index=col_ind, weight=1)
-    for row_ind in range(5):
+    for row_ind in range(6):
         newwnd.rowconfigure(index=row_ind, weight=1)
 
     newwnd.config(bg='#336699') #, width=600, height=600)
@@ -85,6 +89,18 @@ def initWnd():
     rez_dict['info_img'] = info_img
     info_img.grid(row=2, column=2, columnspan=2, sticky='swen', padx=5, pady=5)
 
+    dwn_inf = tkLabel(newwnd,
+                      bg='#336699',
+                      foreground='#7d9cb7',
+                      font=('Arial', 11, 'normal'))
+    rez_dict['dwn_inf'] = dwn_inf
+    dwn_inf.config(text='')
+    dwn_inf.grid(row=3, column=0, columnspan=4, sticky='n')
+
+    pbDownload = ttk.Progressbar(newwnd)
+    rez_dict['pbDownload'] = pbDownload
+    pbDownload.grid(row=4, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
+
     btnDownload = tkButton(newwnd,
                     text='Скачать видео',
                     height=1,
@@ -95,14 +111,7 @@ def initWnd():
                     activeforeground='#0000ff',
                     command=download_cmd)
     rez_dict['btnDownload'] = btnDownload
-    btnDownload.grid(row=3, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
-
-    pbDownload = ttk.Progressbar(newwnd)
-    rez_dict['pbDownload'] = pbDownload
-    pbDownload.grid(row=4, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
-
-    #cr_lbl = tkLabel(newwnd, text='Copyright by st-allex')
-    #cr_lbl.pack(anchor="se")
+    btnDownload.grid(row=5, column=0, columnspan=4, sticky='swen', padx=5, pady=5)
 
     return rez_dict
 
@@ -113,6 +122,13 @@ def clear_prev_info():
     dict_mywnd['prev_img'].config(image=thumbnail_default, width=320, height=190)
     dict_mywnd['info_img'].config(state='normal')
     dict_mywnd['info_img'].delete("1.0", "end")
+    dict_mywnd['info_img'].config(state='disabled')
+
+
+def no_img_inf():
+    dict_mywnd['info_img'].config(state='normal')
+    dict_mywnd['info_img'].delete("1.0", "end")
+    dict_mywnd['info_img'].insert("end", 'Сначала проверьте скачиваемое видео.' + '\n')
     dict_mywnd['info_img'].config(state='disabled')
 
 
@@ -152,7 +168,7 @@ def download_cmd():
         file_name = ''
         download_file(yt, file_name)
     else:
-        print('Сначала проверьте скачиваемое видео.')
+        no_img_inf()
 
 
 def download_file(oYT, file_name):
