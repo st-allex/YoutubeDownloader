@@ -33,9 +33,8 @@ def on_progress(stream, total_size, byte_remaining):
         print("\r" + chr(9646)*int(percent) + chr(9647)*(100-int(percent)) + ' | ' + prog_inf, end="")
     elif gui_mode==1:
         dict_mywnd['pbDownload'].config(value=percent)
-        dict_mywnd['dwn_inf'].config(text=prog_inf)
+        dict_mywnd['td_style'].configure('text.Horizontal.TProgressbar', text=prog_inf)
         dict_mywnd['pbDownload'].update()
-        dict_mywnd['dwn_inf'].update()
     else:
         pass
 
@@ -43,11 +42,13 @@ def on_progress(stream, total_size, byte_remaining):
 def initWnd():
     rez_dict = dict()
     newwnd = Tk()
+
+
     rez_dict['mywnd'] = newwnd
 
     for col_ind in range(2):
         newwnd.columnconfigure(index=col_ind, weight=1)
-    for row_ind in range(7):
+    for row_ind in range(6):
         newwnd.rowconfigure(index=row_ind, weight=1)
 
     newwnd.config(bg='#336699') #, width=600, height=600)
@@ -108,17 +109,20 @@ def initWnd():
     cur_quality.set('kjh')
     #cur_quality.trace('w', handler_set_quality)
 
-    dwn_inf = tkLabel(newwnd,
-                      bg='#336699',
-                      foreground='#7d9cb7',
-                      font=('Arial', 11, 'normal'))
-    rez_dict['dwn_inf'] = dwn_inf
-    dwn_inf.config(text='')
-    dwn_inf.grid(row=4, column=0, columnspan=2, sticky='n')
+    td_style = ttk.Style()
+    rez_dict['td_style'] = td_style
+    td_style.theme_use('classic')
+    td_style.layout('text.Horizontal.TProgressbar',
+                   [('Horizontal.Progressbar.trough',
+                     {'children': [('Horizontal.Progressbar.pbar',
+                                    {'side': 'left', 'sticky': 'ns'})],
+                      'sticky': 'nswe'}),
+                    ('Horizontal.Progressbar.label', {'sticky': ''})])
+    td_style.configure('text.Horizontal.TProgressbar', text='')
 
-    pbDownload = ttk.Progressbar(newwnd)
+    pbDownload = ttk.Progressbar(newwnd, style='text.Horizontal.TProgressbar')
     rez_dict['pbDownload'] = pbDownload
-    pbDownload.grid(row=5, column=0, columnspan=2, sticky='swen', padx=5, pady=5)
+    pbDownload.grid(row=4, column=0, columnspan=2, sticky='swen', padx=5, pady=5)
 
     btnDownload = tkButton(newwnd,
                             text='Скачать видео',
@@ -130,7 +134,7 @@ def initWnd():
                             activeforeground='#0000ff',
                             command=download_cmd)
     rez_dict['btnDownload'] = btnDownload
-    btnDownload.grid(row=6, column=0, columnspan=2, sticky='swen', padx=5, pady=5)
+    btnDownload.grid(row=5, column=0, columnspan=2, sticky='swen', padx=5, pady=5)
 
     return rez_dict
 
