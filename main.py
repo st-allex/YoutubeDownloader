@@ -1,4 +1,4 @@
-from pytube import YouTube
+from pytube import YouTube # https://pytube.io/en/latest/api.html
 from tkinter import (Tk, ttk,
                     Entry as tkEntry,
                     Label as tkLabel,
@@ -37,6 +37,14 @@ def on_progress(stream, total_size, byte_remaining):
         dict_mywnd['pbDownload'].update()
     else:
         pass
+
+
+def hndlQuality(*args): #var, index, mode):
+    # получаем выделенный элемент
+    #selQuality = dict_mywnd['fr_cb_quality'].get()
+    #selection = combobox.get()
+    print('selQuality')
+    #label["text"] = f"вы выбрали: {selection}"
 
 
 def initWnd():
@@ -98,16 +106,19 @@ def initWnd():
     list_qualities = list(dict_qualities.keys())
     cur_quality = tkStringVar()
     fr_cb_quality = ttk.Combobox(fr_param,
-                                    foreground='blue',
                                     width=8,
-                                    background='yellow',
                                     state='readonly',
                                     values=list_qualities,
-                                    textvariable=cur_quality)
+                                    textvariable=cur_quality
+                                 )
     rez_dict['fr_cb_quality'] = fr_cb_quality
     fr_cb_quality.grid(row=0, column=0, sticky='swen', padx=5, pady=5)
-    cur_quality.set('kjh')
-    #cur_quality.trace('w', handler_set_quality)
+    cur_quality.set(list_qualities[0])
+    #print(cur_quality.trace_add())
+    #'get', 'initialize', 'set', 'trace', 'trace_add', 'trace_info', 'trace_remove', 'trace_variable', 'trace_vdelete', 'trace_vinfo']
+    #cur_quality.trace_add('write', callback=hndlQuality)
+    cur_quality.trace('w', hndlQuality)
+    #https: // coderslegacy.com / python / tkinter - trace /
 
     td_style = ttk.Style()
     rez_dict['td_style'] = td_style
@@ -138,8 +149,6 @@ def initWnd():
 
     return rez_dict
 
-def handler_set_quality(*args):
-    print('handler_set_quality')
 
 def clear_prev_info():
     thumbnail_default = tkPhotoImage(file='thumbnail.png')
@@ -206,6 +215,12 @@ def check_cmd():
     yt = get_yt(dict_mywnd['yt_url'].get())
     set_thumbnail(yt.thumbnail_url, dict_mywnd['prev_img'])
     set_info_img(yt, dict_mywnd['info_img'])
+    print('audio btr', yt.streams.get_highest_resolution().abr)
+    print('audio_codec', yt.streams.get_highest_resolution().audio_codec)
+    print('bitrate', yt.streams.get_highest_resolution().bitrate)
+    print('video_codec', yt.streams.get_highest_resolution().video_codec)
+    print('fps', yt.streams.get_highest_resolution().fps)
+    print('filesize_mb', yt.streams.get_highest_resolution().filesize_mb)
 
 
 def main_cons():
